@@ -32,7 +32,22 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+// Smooth scroll helper function
+const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+  e.preventDefault();
+  const element = document.getElementById(sectionId);
+  if (element) {
+    const headerOffset = 80;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth"
+    });
+  }
+};
 
 // Animation variants
 const fadeInUp = {
@@ -86,11 +101,15 @@ function Navigation() {
     >
       <div className="container flex items-center justify-between">
         {/* Logo */}
-        <a href="#home" className="flex items-center gap-3 group">
+        <a 
+          href="#home" 
+          onClick={(e) => scrollToSection(e, 'home')}
+          className="flex items-center gap-3 group"
+        >
           <img
             src="/images/cd-logo.webp"
             alt="CD Waste & Recycling"
-            className="w-12 h-12 rounded-lg object-cover"
+            className="w-10 h-10 rounded-full object-cover border-2 border-[#FF2D55]/50"
           />
           <div className="hidden sm:block">
             <span className="text-xl font-bold tracking-tight text-white group-hover:text-[#FF2D55] transition-colors">
@@ -106,6 +125,7 @@ function Navigation() {
             <a
               key={link.href}
               href={link.href}
+              onClick={(e) => scrollToSection(e, link.href.replace('#', ''))}
               className="text-sm font-medium text-white/70 hover:text-white animated-underline transition-colors"
             >
               {link.label}
@@ -140,7 +160,10 @@ function Navigation() {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => {
+                  scrollToSection(e, link.href.replace('#', ''));
+                  setIsMobileMenuOpen(false);
+                }}
                 className="text-white/80 hover:text-white py-2 border-b border-white/10"
               >
                 {link.label}
@@ -229,7 +252,10 @@ function HeroSection() {
                 Call Us: 07849 357 424
               </Button>
             </a>
-            <a href="#services">
+            <a 
+              href="#services"
+              onClick={(e) => scrollToSection(e, 'services')}
+            >
               <Button
                 size="lg"
                 variant="outline"
@@ -269,7 +295,11 @@ function HeroSection() {
         transition={{ delay: 1.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
-        <a href="#services" className="flex flex-col items-center text-white/50 hover:text-white/80 transition-colors">
+        <a 
+          href="#services" 
+          onClick={(e) => scrollToSection(e, 'services')}
+          className="flex flex-col items-center text-white/50 hover:text-white/80 transition-colors"
+        >
           <span className="text-xs mb-2">Scroll</span>
           <ChevronDown className="w-6 h-6 animate-bounce" />
         </a>
@@ -459,7 +489,10 @@ function AboutSection() {
             </motion.div>
 
             <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap gap-4">
-              <a href="tel:07849357424">
+              <a 
+                href="#contact"
+                onClick={(e) => scrollToSection(e, 'contact')}
+              >
                 <Button
                   size="lg"
                   className="bg-[#FF2D55] hover:bg-[#FF2D55]/90 text-white glow-red-hover"
@@ -902,11 +935,15 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Logo & Description */}
           <div className="md:col-span-2">
-            <a href="#home" className="flex items-center gap-3 mb-4">
+            <a 
+              href="#home" 
+              onClick={(e) => scrollToSection(e, 'home')}
+              className="flex items-center gap-3 mb-4"
+            >
               <img
                 src="/images/cd-logo.webp"
                 alt="CD Waste & Recycling"
-                className="w-12 h-12 rounded-lg object-cover"
+                className="w-10 h-10 rounded-full object-cover border-2 border-[#FF2D55]/50"
               />
               <div>
                 <span className="text-xl font-bold text-white">CD</span>
@@ -927,16 +964,32 @@ function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Quick Links</h4>
             <nav className="flex flex-col gap-2">
-              <a href="#services" className="text-white/60 hover:text-white">
+              <a 
+                href="#services" 
+                onClick={(e) => scrollToSection(e, 'services')}
+                className="text-white/60 hover:text-white"
+              >
                 Services
               </a>
-              <a href="#about" className="text-white/60 hover:text-white">
+              <a 
+                href="#about" 
+                onClick={(e) => scrollToSection(e, 'about')}
+                className="text-white/60 hover:text-white"
+              >
                 About Us
               </a>
-              <a href="#gallery" className="text-white/60 hover:text-white">
+              <a 
+                href="#gallery" 
+                onClick={(e) => scrollToSection(e, 'gallery')}
+                className="text-white/60 hover:text-white"
+              >
                 Gallery
               </a>
-              <a href="#testimonials" className="text-white/60 hover:text-white">
+              <a 
+                href="#testimonials" 
+                onClick={(e) => scrollToSection(e, 'testimonials')}
+                className="text-white/60 hover:text-white"
+              >
                 Reviews
               </a>
             </nav>
