@@ -594,22 +594,37 @@ function AboutSection() {
   );
 }
 
-// Gallery Section
+// Gallery Section with Checkatrade Integration
 function GallerySection() {
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [showCheckatradeModal, setShowCheckatradeModal] = useState(false);
+
   const galleryImages = [
-    { src: "/images/project-1-before.webp", label: "House Clearance" },
-    { src: "/images/project-2-before.webp", label: "Rubble Removal" },
-    { src: "/images/project-3-before.webp", label: "Garage Clearance" },
-    { src: "/images/project-4-after.webp", label: "After Clearance" },
-    { src: "/images/job-1-garden.webp", label: "Garden Waste" },
-    { src: "/images/job-2-sofa.webp", label: "Furniture Removal" },
-    { src: "/images/job-3-rubble.webp", label: "Construction Debris" },
-    { src: "/images/job-4-bricks.webp", label: "Brick & Rubble" },
-    { src: "/images/job-5-shed.webp", label: "Shed Clearance" },
-    { src: "/images/job-6-skip.webp", label: "Skip Bag Service" },
-    { src: "/images/job-7-debris.webp", label: "Site Clearance" },
-    { src: "/images/cta-bg.png", label: "Before & After" },
+    { src: "/images/project-1-before.webp", label: "House Clearance", type: "before" },
+    { src: "/images/project-2-before.webp", label: "Rubble Removal", type: "before" },
+    { src: "/images/project-3-before.webp", label: "Garage Clearance", type: "before" },
+    { src: "/images/project-4-after.webp", label: "After Clearance", type: "after" },
+    { src: "/images/job-1-garden.webp", label: "Garden Waste", type: "before" },
+    { src: "/images/job-2-sofa.webp", label: "Furniture Removal", type: "before" },
+    { src: "/images/job-3-rubble.webp", label: "Construction Debris", type: "before" },
+    { src: "/images/job-4-bricks.webp", label: "Brick & Rubble", type: "before" },
+    { src: "/images/job-5-shed.webp", label: "Shed Clearance", type: "before" },
+    { src: "/images/job-6-skip.webp", label: "Skip Bag Service", type: "service" },
+    { src: "/images/job-7-debris.webp", label: "Site Clearance", type: "before" },
+    { src: "/images/cta-bg.png", label: "Before & After", type: "after" },
   ];
+
+  // Close modal on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedImage(null);
+        setShowCheckatradeModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
 
   return (
     <section id="gallery" className="py-24 relative overflow-hidden bg-[#050508]">
@@ -638,8 +653,16 @@ function GallerySection() {
             className="text-white/60 max-w-2xl mx-auto text-lg"
           >
             See the quality and professionalism we bring to every project. Real
-            results from real jobs.
+            results from real jobs on Checkatrade.
           </motion.p>
+          
+          {/* Checkatrade Badge */}
+          <motion.div variants={fadeInUp} className="mt-6 flex items-center justify-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 glass rounded-full">
+              <CheckCircle2 className="w-5 h-5 text-[#00D4FF]" />
+              <span className="text-white/80 text-sm">Photos from our Checkatrade profile</span>
+            </div>
+          </motion.div>
         </motion.div>
 
         <motion.div
@@ -653,7 +676,8 @@ function GallerySection() {
             <motion.div
               key={index}
               variants={scaleIn}
-              className="relative group overflow-hidden rounded-xl aspect-square"
+              onClick={() => setSelectedImage(index)}
+              className="relative group overflow-hidden rounded-xl aspect-square cursor-pointer"
             >
               <img
                 src={image.src}
@@ -661,13 +685,181 @@ function GallerySection() {
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Type Badge */}
+              <div className="absolute top-3 left-3">
+                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                  image.type === "before" ? "bg-[#FF2D55]/80 text-white" :
+                  image.type === "after" ? "bg-[#00D4FF]/80 text-white" :
+                  "bg-white/20 text-white"
+                }`}>
+                  {image.type === "before" ? "Before" : image.type === "after" ? "After" : "Service"}
+                </span>
+              </div>
+              
               <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                 <span className="text-white font-medium">{image.label}</span>
+              </div>
+              
+              {/* Zoom Icon */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                  </svg>
+                </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
+
+        {/* View More on Checkatrade Button */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          className="mt-12 text-center"
+        >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="https://www.checkatrade.com/trades/cdrecycling"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                size="lg"
+                className="bg-[#00D4FF] hover:bg-[#00D4FF]/90 text-[#050508] font-semibold glow-blue-hover"
+              >
+                <CheckCircle2 className="w-5 h-5 mr-2" />
+                View All Photos on Checkatrade
+              </Button>
+            </a>
+            <button
+              onClick={() => setShowCheckatradeModal(true)}
+              className="text-white/60 hover:text-white underline underline-offset-4 transition-colors"
+            >
+              Or preview Checkatrade profile here
+            </button>
+          </div>
+          <p className="mt-4 text-white/40 text-sm">
+            Our gallery updates automatically as we add new projects to Checkatrade
+          </p>
+        </motion.div>
       </div>
+
+      {/* Image Lightbox Modal */}
+      {selectedImage !== null && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0 z-50 bg-[#050508]/95 backdrop-blur-xl flex items-center justify-center p-4"
+        >
+          <button
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-6 right-6 text-white/60 hover:text-white p-2"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          
+          {/* Navigation Arrows */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImage(selectedImage > 0 ? selectedImage - 1 : galleryImages.length - 1);
+            }}
+            className="absolute left-4 sm:left-8 text-white/60 hover:text-white p-2 bg-white/10 rounded-full"
+          >
+            <ChevronDown className="w-8 h-8 rotate-90" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImage(selectedImage < galleryImages.length - 1 ? selectedImage + 1 : 0);
+            }}
+            className="absolute right-4 sm:right-8 text-white/60 hover:text-white p-2 bg-white/10 rounded-full"
+          >
+            <ChevronDown className="w-8 h-8 -rotate-90" />
+          </button>
+          
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-4xl max-h-[80vh] relative"
+          >
+            <img
+              src={galleryImages[selectedImage].src}
+              alt={galleryImages[selectedImage].label}
+              className="max-w-full max-h-[80vh] object-contain rounded-xl"
+            />
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#050508] to-transparent rounded-b-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full mr-2 ${
+                    galleryImages[selectedImage].type === "before" ? "bg-[#FF2D55]/80 text-white" :
+                    galleryImages[selectedImage].type === "after" ? "bg-[#00D4FF]/80 text-white" :
+                    "bg-white/20 text-white"
+                  }`}>
+                    {galleryImages[selectedImage].type === "before" ? "Before" : 
+                     galleryImages[selectedImage].type === "after" ? "After" : "Service"}
+                  </span>
+                  <span className="text-white font-medium">{galleryImages[selectedImage].label}</span>
+                </div>
+                <span className="text-white/60 text-sm">{selectedImage + 1} / {galleryImages.length}</span>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Checkatrade Profile Modal */}
+      {showCheckatradeModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowCheckatradeModal(false)}
+          className="fixed inset-0 z-50 bg-[#050508]/95 backdrop-blur-xl flex items-center justify-center p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden relative"
+          >
+            <div className="absolute top-0 left-0 right-0 h-14 bg-[#050508] flex items-center justify-between px-4 z-10">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-[#00D4FF]" />
+                <span className="text-white font-medium">CD Recycling on Checkatrade</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://www.checkatrade.com/trades/cdrecycling"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#00D4FF] hover:text-[#00D4FF]/80 text-sm underline"
+                >
+                  Open in new tab
+                </a>
+                <button
+                  onClick={() => setShowCheckatradeModal(false)}
+                  className="text-white/60 hover:text-white p-1"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+            <iframe
+              src="https://www.checkatrade.com/trades/cdrecycling"
+              className="w-full h-full pt-14"
+              title="CD Recycling Checkatrade Profile"
+            />
+          </motion.div>
+        </motion.div>
+      )}
     </section>
   );
 }
